@@ -1,5 +1,4 @@
 import tkinter as tki
-from PIL import Image, ImageTk
 from add import Add
 
 class AlarmUI():
@@ -47,8 +46,10 @@ class AlarmUI():
     def click_add(self):
         add_alarm = tki.Toplevel()
 
-        add_alarm.minsize(385, 230)
-        add_alarm.maxsize(385, 230)
+        add_alarm.transient(self.master)
+
+        add_alarm.minsize(390, 350)
+        add_alarm.maxsize(390, 350)
 
         add_alarm.title("Add Alarm")
 
