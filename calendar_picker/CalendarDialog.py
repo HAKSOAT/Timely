@@ -21,6 +21,8 @@ class CalendarFrame(tkinter.LabelFrame):
     def __init__(self, master):
         tkinter.LabelFrame.__init__(self, master)
 
+        self.transient = master
+
         def getdate():
             cd = CalendarDialog(self)
             result = cd.result
@@ -29,7 +31,7 @@ class CalendarFrame(tkinter.LabelFrame):
                 self.selected_date.set(result.strftime("%m/%d/%Y"))
                 self.date_box["state"] = tkinter.DISABLED
             except AttributeError:
-                pass
+                self.date_box["state"] = tkinter.DISABLED
 
         self.selected_date = tkinter.StringVar()
 
