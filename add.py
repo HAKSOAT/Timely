@@ -82,18 +82,18 @@ class Add():
         self.tone_click = tki.Button(self.tone_box, text = "Choose a tone")
         self.tone_click.grid(row = 1, column = 0)
 
-        self.increase_one.bind("<Button-1>", self.increase)
-        self.increase_two.bind("<Button-1>", self.increase)
-        self.increase_three.bind("<Button-1>", self.increase)
-        self.increase_four.bind("<Button-1>", self.increase)
+        self.increase_one.bind("<ButtonRelease-1>", self.increase)
+        self.increase_two.bind("<ButtonRelease-1>", self.increase)
+        self.increase_three.bind("<ButtonRelease-1>", self.increase)
+        self.increase_four.bind("<ButtonRelease-1>", self.increase)
 
-        self.decrease_one.bind("<Button-1>", self.decrease)
-        self.decrease_two.bind("<Button-1>", self.decrease)
-        self.decrease_three.bind("<Button-1>", self.decrease)
-        self.decrease_four.bind("<Button-1>", self.decrease)
+        self.decrease_one.bind("<ButtonRelease-1>", self.decrease)
+        self.decrease_two.bind("<ButtonRelease-1>", self.decrease)
+        self.decrease_three.bind("<ButtonRelease-1>", self.decrease)
+        self.decrease_four.bind("<ButtonRelease-1>", self.decrease)
 
-        self.tone_click.bind("<Button-1>", self.get_tone)
-        self.add_button.bind("<Button-1>", self.add_alarm)
+        self.tone_click.bind("<ButtonRelease-1>", self.get_tone)
+        self.add_button.bind("<ButtonRelease-1>", self.add_alarm)
 
 
     def increase(self, event):
@@ -122,16 +122,21 @@ class Add():
         elif self.decrease_four.winfo_id == event.widget.winfo_id and self.unit_minutes["text"] >= 1:
             self.units_minutes["text"] -= 1
 
+
     def get_tone(self, event):
         self.tone = filedialog.askopenfilename(initialdir = "/",title = "Select tone",filetypes = (("mp3 files","*.mp3"),))
-        self.stripped_tone = self.tone.split("/")[-1]
-        self.tone_name["state"] = tki.NORMAL
-        self.tone_name.insert(tki.END, self.stripped_tone)
-        self.tone_name["state"] = tki.DISABLED
+        try:
+            self.stripped_tone = self.tone.split("/")[-1]
+            self.tone_name["state"] = tki.NORMAL
+            self.tone_name.insert(tki.END, self.stripped_tone)
+            self.tone_name["state"] = tki.DISABLED
+        except AttributeError:
+            self.tone = None
+
 
     def get_time(self):
         self.time = [int(str(tens_hour) + str(units_hour)), int(str(tens_minutes) + str(units_minutes))]
-
+        self.time = {"hour": self.time[0], "minute": self.time[1]}
     def get_date(self):
         try:
             self.date = list(map(int, self.calendar_frame.date_box.get().split("/")))
@@ -144,7 +149,7 @@ class Add():
         storage = Storage()
         self.time_index = time.time()
         storage.add(self.time_index, self.date["year"], self.date["month"], self.date["day"],
-                    self.time[0], self.time[1], self.tone)
+                    self.time["hour"], self.time["minute"], self.tone)
 
     def add_alarm(self, event):
         self.get_date()
