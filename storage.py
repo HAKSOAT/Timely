@@ -1,16 +1,16 @@
 import sqlite3
 
-class Storage():
+class AlarmStorage():
 
     def __init__(self, location):
         self.connect_status = None
         self.cursor = None
-        self.location = location
+        self.db_name = "alarm_storage.sqlite3"
+        self.location = location + self.db_name
 
     def create(self):
-        self.connect_status = sqlite3.connect(self.location)
-        self.cursor = self.connect_status.cursor()
-        self.cursor.execute("CREATE TABLE Alarms (Time INTEGER, Year INTEGER, Month INTEGER, Day INTEGER, Hour INTEGER, Minute INTEGER, Tone TEXT)")
+        self.connect()
+        self.cursor.execute("CREATE TABLE Alarms (Time INTEGER, Year TEXT, Month TEXT, Day TEXT, Hour TEXT, Minute TEXT, Tone TEXT)")
 
     def add(self, time, year, month, day, hour, minute, tone):
         self.cursor.execute("INSERT INTO Alarms (Time, Year, Month, Day, Hour, Minute, Tone) VALUES (?, ?, ?, ?, ?, ?, ?);", (time, year, month, day, hour, minute, tone))
@@ -24,3 +24,12 @@ class Storage():
             return self.cursor.fetchall()
         except IndexError:
         	return ""
+    def connect(self):
+        self.connect_status = sqlite3.connect(self.location)
+        self.cursor = self.connect_status.cursor()
+
+    def commit(self):
+        self.connect_status.commit()
+
+    def close(self):
+        self.connect_status.close()

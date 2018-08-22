@@ -2,8 +2,10 @@ import tkinter as tki
 
 class AlarmBox():
 
-    def __init__(self, master):
+    def __init__(self, master, storage):
         self.master = master
+        self.storage = storage
+
         self.alarm_frame = tki.Frame(self.master, padx = 7, pady = 5)
         self.alarm_frame.grid(row = 1, column = 0, columnspan = 8)
 
@@ -15,16 +17,27 @@ class AlarmBox():
 
         self.alarm_canv["yscrollcommand"] = self.scrollbar.set
 
-        # self.but_ = tki.Button(self.alarm_canv)
-        #
-        # for each in range(0,250,5):
-        #     self.alarm_canv.create_window((each,each), window = tki.Button(self.alarm_canv), anchor = "n")
+        self.db_result = self.storage.query()
 
-        self.add_alarm(20, 10)
-        self.add_alarm(20, 60)
+        self.point_y = 10
+        for each in self.db_result:
+            set_time = each[3:5]
+            set_date = each[:3]
+            self.add_alarm(264, self.point_y, set_time, set_date)
+            self.point_y += 50
+        # self.add_alarm(264, 10)
+        # self.add_alarm(264, 60)
 
-    def add_alarm(self, x, y):
-        self.alarm_display = tki.Button(self.alarm_canv, height = 2, width = 76, text = "Alarm One\t\t\t\t\tdfsh", bg = "#ffffff")
-        self.checkbutton = tki.Checkbutton(self.alarm_canv, bg = "#000fff000")
-        self.alarm_canv.create_window((x + 266,y), window = self.alarm_display, anchor = "n")
-        self.alarm_canv.create_window((x,y + 10), window = self.checkbutton, anchor = "n")
+    def add_alarm(self, x, y, time, date):
+        checkbox_x = 22
+        checkbox_y = 10
+        time = "{}:{}".format(time[0], time[1])
+        date = "{}-{}-{}".format(date[2], date[1], date[0])
+
+        self.alarm_display = tki.Button(self.alarm_canv, height = 2, width = 76,
+                            text = "{}\t\t\t\t\t{}".format(time, date), bg = "#ffffff")
+        self.checkbutton = tki.Checkbutton(self.alarm_canv, bg = "#000fff000",
+                            indicatoron = 0, width = 2)
+        self.alarm_canv.create_window((checkbox_x + x, y), window = self.alarm_display, anchor = "n")
+        self.alarm_canv.create_window((checkbox_x,checkbox_y + y),
+                                        window = self.checkbutton, anchor = "n")

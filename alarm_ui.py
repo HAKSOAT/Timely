@@ -1,10 +1,22 @@
 import tkinter as tki
 from add import Add
+from alarm_box import AlarmBox
+from storage import AlarmStorage
+import os
 
 class AlarmUI():
 
     def __init__(self, master):
         self.master = master
+        self.location = "./"
+        self.db_name = "alarm_storage.sqlite3"
+
+        if self.db_name in os.listdir("."):
+            self.storage = AlarmStorage("./")
+            self.storage.connect()
+        else:
+            self.storage = AlarmStorage("./")
+            self.storage.create()
 
         photo = tki.PhotoImage(file = "plus-16.gif")
         self.add_bt = tki.Button(self.master, text = "Add", image = photo, compound = "left", command = self.click_add)
@@ -26,14 +38,13 @@ class AlarmUI():
         self.clone_bt.image = photo
         self.clone_bt.grid(row = 0, column = 3, sticky = tki.N + tki.E + tki.S + tki.W)
 
-        self.alarm_box = tki.Canvas(self.master, bg = '#000fff000')
-        self.alarm_box.grid(row = 1, column = 0, pady = 5, ipadx = 105, padx = 5, columnspan = 8)
+        AlarmBox(self.master, self.storage)
 
-        self.set_alarms_text = tki.Label(self.master, text = "Next 3 alarms")
-        self.set_alarms_text.grid(row = 2, column = 0)
+        # self.set_alarms_text = tki.Label(self.master, text = "Next 3 alarms")
+        # self.set_alarms_text.grid(row = 2, column = 0)
 
-        self.set_alarms_box = tki.Entry(self.master)
-        self.set_alarms_box.grid(row = 3, column = 0, ipady = 25, ipadx = 222, padx = 5, columnspan = 8)
+        self.set_alarms_box = tki.LabelFrame(self.master, text = "Up Next", height = 68, width = 585, bg = "#ffffff")
+        self.set_alarms_box.grid(row = 3, padx = [2,0], pady = [7, 0], column = 0, columnspan = 8)
 
         self.menu = tki.Menu(self.master)
         self.master.configure(menu = self.menu)
@@ -53,4 +64,4 @@ class AlarmUI():
 
         add_alarm.title("Add Alarm")
 
-        Add(add_alarm)
+        Add(add_alarm, self.storage)

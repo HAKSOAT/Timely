@@ -3,14 +3,15 @@ from tkinter import filedialog
 from tkinter import messagebox
 from calendar_picker.CalendarDialog import CalendarFrame
 
-from storage import Storage
+from storage import AlarmStorage
 import time
 
 
 class Add():
 
-    def __init__(self, master):
+    def __init__(self, master, storage):
         self.master = master
+        self.storage = storage
 
         self.time = None
         self.date = None
@@ -124,7 +125,8 @@ class Add():
 
 
     def get_tone(self, event):
-        self.tone = filedialog.askopenfilename(initialdir = "/",title = "Select tone",filetypes = (("mp3 files","*.mp3"),))
+        self.tone = filedialog.askopenfilename(initialdir = "/",title = "Select tone",
+                    filetypes = (("mp3 files","*.mp3"),), parent = self.master)
         try:
             self.stripped_tone = self.tone.split("/")[-1]
             self.tone_name["state"] = tki.NORMAL
@@ -135,24 +137,25 @@ class Add():
 
 
     def get_time(self):
-        self.time = [int(str(tens_hour) + str(units_hour)), int(str(tens_minutes) + str(units_minutes))]
+        self.time = [str(self.tens_hour["text"]) + str(self.units_hour["text"]), str(self.tens_minutes["text"]) + str(self.units_minutes["text"])]
         self.time = {"hour": self.time[0], "minute": self.time[1]}
     def get_date(self):
         try:
-            self.date = list(map(int, self.calendar_frame.date_box.get().split("/")))
+            self.date = self.calendar_frame.date_box.get().split("/")
             self.date = {"year":self.date[2], "month":self.date[1], "day":self.date[0]}
 
         except ValueError:
             self.date = None
 
     def to_db(self):
-        storage = Storage()
         self.time_index = time.time()
-        storage.add(self.time_index, self.date["year"], self.date["month"], self.date["day"],
-                    self.time["hour"], self.time["minute"], self.tone)
+        self.storage.add(self.time_index, self.date["year"], self.date["month"], self.date["day"],
+                     self.time["hour"], self.time["minute"], self.tone)
+        self.storage.commit()
 
     def add_alarm(self, event):
         self.get_date()
+        self.get_time()
         if self.date is None:
             messagebox.showerror(title = "Error!", message = "Please choose a date!")
 
@@ -160,7 +163,7 @@ class Add():
             messagebox.showerror(title = "Error!", message = "Please choose a tone!")
 
         else:
-            # self.to_db()
+            self.to_db()
             self.close()
 
 
