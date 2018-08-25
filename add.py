@@ -9,9 +9,10 @@ import time
 
 class Add():
 
-    def __init__(self, master, storage):
+    def __init__(self, master, storage, alarm_box):
         self.master = master
         self.storage = storage
+        self.alarm_box = alarm_box
 
         self.time = None
         self.date = None
@@ -149,9 +150,11 @@ class Add():
 
     def to_db(self):
         self.time_index = time.time()
+        self.storage.connect()
         self.storage.add(self.time_index, self.date["year"], self.date["month"], self.date["day"],
                      self.time["hour"], self.time["minute"], self.tone)
         self.storage.commit()
+        self.storage.close()
 
     def add_alarm(self, event):
         self.get_date()
@@ -164,6 +167,7 @@ class Add():
 
         else:
             self.to_db()
+            self.alarm_box.show_alarm()
             self.close()
 
 
