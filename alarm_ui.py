@@ -2,6 +2,7 @@ import tkinter as tki
 from add import Add
 from alarm_box import AlarmBox
 from storage import AlarmStorage
+from checked_buttons import CheckedButtons
 import os
 
 class AlarmUI():
@@ -24,7 +25,7 @@ class AlarmUI():
         self.add_bt.grid(row = 0, column = 0, sticky = tki.N + tki.E + tki.S + tki.W)
 
         photo = tki.PhotoImage(file = "minus-16.gif")
-        self.delete_bt = tki.Button(self.master, text = "Delete", image = photo, compound = "left")
+        self.delete_bt = tki.Button(self.master, text = "Delete", image = photo, compound = "left", command = self.click_delete)
         self.delete_bt.image = photo
         self.delete_bt.grid(row = 0, column = 1, sticky = tki.N + tki.E + tki.S + tki.W)
 
@@ -38,10 +39,10 @@ class AlarmUI():
         self.clone_bt.image = photo
         self.clone_bt.grid(row = 0, column = 3, sticky = tki.N + tki.E + tki.S + tki.W)
 
-        AlarmBox(self.master, self.storage)
+        self.alarm_box = AlarmBox(self.master, self.storage)
+        self.alarm_box.show_alarm()
 
-        # self.set_alarms_text = tki.Label(self.master, text = "Next 3 alarms")
-        # self.set_alarms_text.grid(row = 2, column = 0)
+        self.button_state = []
 
         self.set_alarms_box = tki.LabelFrame(self.master, text = "Up Next", height = 68, width = 585, bg = "#ffffff")
         self.set_alarms_box.grid(row = 3, padx = [2,0], pady = [7, 0], column = 0, columnspan = 8)
@@ -54,6 +55,8 @@ class AlarmUI():
         self.menu.add_cascade(label = "Settings")
         self.menu.add_cascade(label = "Help")
 
+        self.delete_state = True
+
     def click_add(self):
         add_alarm = tki.Toplevel()
 
@@ -64,4 +67,32 @@ class AlarmUI():
 
         add_alarm.title("Add Alarm")
 
-        Add(add_alarm, self.storage)
+        Add(add_alarm, self.storage, self.alarm_box)
+
+    def click_delete(self):
+
+        button_state = CheckedButtons(self.alarm_box.checkbutton_states).check_state()
+
+        check_n_button_state = []
+
+        for state in button_state:
+            if state != "0":
+                check_n_button_state += [state,state]
+            else:
+                check_n_button_state += ["0","0"]
+
+        all_button_instances = self.alarm_box.alarm_canv.winfo_children()
+
+        each_index = [index_ for index_, value in enumerate(check_n_button_state) if value != "0"]
+
+        try:
+            killed_buttons = [(all_button_instances[each], check_n_button_state[each]) for each in each_index]
+        except IndexError:
+            pass
+        for each in killed_buttons:
+            self.storage.connect()
+            each[0].destroy()
+            self.storage.delete(each[1])
+            self.storage.commit()
+            self.storage.close()
+        self.alarm_box.show_alarm()
