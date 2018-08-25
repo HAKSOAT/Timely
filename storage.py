@@ -16,11 +16,11 @@ class AlarmStorage():
         self.cursor.execute("INSERT INTO Alarms (Time, Year, Month, Day, Hour, Minute, Tone) VALUES (?, ?, ?, ?, ?, ?, ?);", (time, year, month, day, hour, minute, tone))
 
     def delete(self, time):
-        self.cursor.execute("DELETE FROM Alarms WHERE Time = ?;", (time))
+        self.cursor.execute("DELETE FROM Alarms WHERE Time = ?;", (time,))
 
     def query(self):
         try:
-            self.cursor.execute("SELECT Year, Month, Day, Hour, Minute, Tone FROM Alarms ORDER BY Time ASC;")
+            self.cursor.execute("SELECT Time, Year, Month, Day, Hour, Minute, Tone FROM Alarms ORDER BY Time ASC;")
             return self.cursor.fetchall()
         except IndexError:
         	return ""
