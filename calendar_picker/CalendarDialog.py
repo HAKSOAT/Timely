@@ -28,7 +28,7 @@ class CalendarFrame(tkinter.LabelFrame):
             result = cd.result
             try:
                 self.date_box["state"] = tkinter.NORMAL
-                self.selected_date.set(result.strftime("%m/%d/%Y"))
+                self.selected_date.set(result.strftime("%d/%m/%Y"))
                 self.date_box["state"] = tkinter.DISABLED
             except AttributeError:
                 self.date_box["state"] = tkinter.DISABLED
