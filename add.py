@@ -38,8 +38,8 @@ class Add():
         self.add_button = tki.Button(self.master, text = "Add Alarm", padx = 35, command = self.get_date)
         self.add_button.grid(row = 3, column = 2, columnspan = 3, pady = [120,0])
 
-        up_arrow = tki.PhotoImage(file = "arrow-141-16.gif")
-        down_arrow = tki.PhotoImage(file = "arrow-204-16.gif")
+        up_arrow = tki.PhotoImage(file = "icons/arrow-141-16.gif")
+        down_arrow = tki.PhotoImage(file = "icons/arrow-204-16.gif")
 
         self.increase_one = tki.Button(self.master, image = up_arrow)
         self.increase_one.image = up_arrow

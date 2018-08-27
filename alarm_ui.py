@@ -4,6 +4,8 @@ from alarm_box import AlarmBox
 from storage import AlarmStorage
 from checked_buttons import CheckedButtons
 import os
+import time
+
 
 class AlarmUI():
 
@@ -19,34 +21,6 @@ class AlarmUI():
             self.storage = AlarmStorage("./")
             self.storage.create()
 
-        photo = tki.PhotoImage(file = "icons/plus-16.gif")
-        self.add_bt = tki.Button(self.master, text = "Add", image = photo, compound = "left", command = self.click_add)
-        self.add_bt.image = photo
-        self.add_bt.grid(row = 0, column = 0, sticky = tki.N + tki.E + tki.S + tki.W)
-
-        photo = tki.PhotoImage(file = "icons/minus-16.gif")
-        self.delete_bt = tki.Button(self.master, text = "Delete", image = photo, compound = "left", command = self.click_delete)
-        self.delete_bt.image = photo
-        self.delete_bt.grid(row = 0, column = 1, sticky = tki.N + tki.E + tki.S + tki.W)
-
-        photo = tki.PhotoImage(file = "icons/edit-11-16.gif")
-        self.edit_bt = tki.Button(self.master, text = "Edit", image = photo, compound = "left")
-        self.edit_bt.image = photo
-        self.edit_bt.grid(row = 0, column = 2, sticky = tki.N + tki.E + tki.S + tki.W)
-
-        photo = tki.PhotoImage(file = "icons/copy-16.gif")
-        self.clone_bt = tki.Button(self.master, text = "Clone", image = photo, compound = "left")
-        self.clone_bt.image = photo
-        self.clone_bt.grid(row = 0, column = 3, sticky = tki.N + tki.E + tki.S + tki.W)
-
-        self.alarm_box = AlarmBox(self.master, self.storage)
-        self.alarm_box.show_alarm()
-
-        self.button_state = []
-
-        self.set_alarms_box = tki.LabelFrame(self.master, text = "Up Next", height = 68, width = 585, bg = "#ffffff")
-        self.set_alarms_box.grid(row = 3, padx = [2,0], pady = [7, 0], column = 0, columnspan = 8)
-
         self.menu = tki.Menu(self.master)
         self.master.configure(menu = self.menu)
         self.menu.add_cascade(label = "Alarm")
@@ -55,9 +29,31 @@ class AlarmUI():
         self.menu.add_cascade(label = "Settings")
         self.menu.add_cascade(label = "Help")
 
-        self.delete_state = True
+        self.button_images = ["icons/plus-16.gif", "icons/minus-16.gif", "icons/edit-11-16.gif", "icons/copy-16.gif"]
+        self.button_text = ["Add", "Delete", "Edit", "Clone"]
+        self.buttons = []
 
-    def click_add(self):
+        for image, text in zip(self.button_images, self.button_text):
+            photo = tki.PhotoImage(file = image)
+            button = tki.Button(self.master, text = text, image = photo, compound = "left")
+            button.image = photo
+            column_value = self.button_text.index(text)
+            button.grid(row = 0, column = column_value, sticky = tki.N + tki.E + tki.S + tki.W)
+            self.buttons.append(button)
+
+        self.set_alarms_box = tki.LabelFrame(self.master, text = "Up Next", height = 68, width = 585, bg = "#ffffff")
+        self.set_alarms_box.grid(row = 3, padx = [2,0], pady = [7, 0], column = 0, columnspan = 8)
+
+        self.alarm_box = AlarmBox(self.master, self.storage)
+        self.alarm_box.show_alarm()
+
+        self.buttons[0].bind("<ButtonRelease-1>", self.click_add)
+        self.buttons[1].bind("<ButtonRelease-1>", self.click_delete)
+        self.buttons[3].bind("<ButtonRelease-1>", self.click_clone)
+
+        self.button_state = []
+
+    def click_add(self, event):
         add_alarm = tki.Toplevel()
 
         add_alarm.transient(self.master)
@@ -69,30 +65,28 @@ class AlarmUI():
 
         Add(add_alarm, self.storage, self.alarm_box)
 
-    def click_delete(self):
+    def click_delete(self, event):
 
-        button_state = CheckedButtons(self.alarm_box.checkbutton_states).check_state()
+        label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
+        self.storage.connect()
+        for label, state in label_state:
+            if state == 1:
+                self.storage.delete(label["text"])
+                self.storage.commit()
+        self.storage.close()
+        self.alarm_box.delete()
+        self.alarm_box.show_alarm()
 
-        check_n_button_state = []
+    def click_clone(self, event):
+        label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
+        self.storage.connect()
+        for label, state in label_state:
+            if state == 1:
+                db_result = self.storage.query(label["text"])
+                time_index = time.time()
+                db_result = db_result[0]
+                self.storage.add(time_index, db_result[1], db_result[2], db_result[3], db_result[4], db_result[5] , db_result[6])
+                self.storage.commit()
 
-        for state in button_state:
-            if state != "0":
-                check_n_button_state += [state,state]
-            else:
-                check_n_button_state += ["0","0"]
-
-        all_button_instances = self.alarm_box.alarm_canv.winfo_children()
-
-        each_index = [index_ for index_, value in enumerate(check_n_button_state) if value != "0"]
-
-        try:
-            killed_buttons = [(all_button_instances[each], check_n_button_state[each]) for each in each_index]
-        except IndexError:
-            pass
-        for each in killed_buttons:
-            self.storage.connect()
-            each[0].destroy()
-            self.storage.delete(each[1])
-            self.storage.commit()
-            self.storage.close()
+        self.storage.close()
         self.alarm_box.show_alarm()
