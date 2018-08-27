@@ -18,12 +18,19 @@ class AlarmStorage():
     def delete(self, time):
         self.cursor.execute("DELETE FROM Alarms WHERE Time = ?;", (time,))
 
-    def query(self):
-        try:
-            self.cursor.execute("SELECT Time, Year, Month, Day, Hour, Minute, Tone FROM Alarms ORDER BY Time ASC;")
+    def query(self, time = ""):
+
+        if time == "":
+            try:
+                self.cursor.execute("SELECT Time, Year, Month, Day, Hour, Minute, Tone FROM Alarms ORDER BY Time ASC;")
+                return self.cursor.fetchall()
+            except IndexError:
+            	return ""
+
+        else:
+            self.cursor.execute("SELECT Time, Year, Month, Day, Hour, Minute, Tone FROM Alarms WHERE Time = ?;", (time,))
             return self.cursor.fetchall()
-        except IndexError:
-        	return ""
+
     def connect(self):
         self.connect_status = sqlite3.connect(self.location)
         self.cursor = self.connect_status.cursor()
