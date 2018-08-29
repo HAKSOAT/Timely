@@ -18,7 +18,7 @@ class CalendarDialog(tkSimpleDialog.Dialog):
 
 
 class CalendarFrame(tkinter.LabelFrame):
-    def __init__(self, master):
+    def __init__(self, master, date = None):
         tkinter.LabelFrame.__init__(self, master)
 
         self.transient = master
@@ -34,7 +34,10 @@ class CalendarFrame(tkinter.LabelFrame):
                 self.date_box["state"] = tkinter.DISABLED
 
         self.selected_date = tkinter.StringVar()
-
+        if date == None:
+            pass
+        else:
+            self.selected_date.set(date)
         self.date_box = tkinter.Entry(self, textvariable=self.selected_date, state = tkinter.DISABLED)
         self.date_box.pack(side=tkinter.TOP)
         tkinter.Button(self, text="Choose a date", command=getdate).pack(side=tkinter.TOP)
