@@ -1,7 +1,9 @@
 import tkinter as tki
-from add import Add
+from alarm_config import Config
 from alarm_box import AlarmBox
 from storage import AlarmStorage
+from tkinter import filedialog
+from tkinter import messagebox
 from checked_buttons import CheckedButtons
 import os
 import time
@@ -49,6 +51,7 @@ class AlarmUI():
 
         self.buttons[0].bind("<ButtonRelease-1>", self.click_add)
         self.buttons[1].bind("<ButtonRelease-1>", self.click_delete)
+        self.buttons[2].bind("<ButtonRelease-1>", self.click_edit)
         self.buttons[3].bind("<ButtonRelease-1>", self.click_clone)
 
         self.button_state = []
@@ -63,30 +66,68 @@ class AlarmUI():
 
         add_alarm.title("Add Alarm")
 
-        Add(add_alarm, self.storage, self.alarm_box)
+        Config(add_alarm, self.storage, self.alarm_box)
 
     def click_delete(self, event):
-
         label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
-        self.storage.connect()
-        for label, state in label_state:
-            if state == 1:
-                self.storage.delete(label["text"])
-                self.storage.commit()
-        self.storage.close()
-        self.alarm_box.delete()
-        self.alarm_box.show_alarm()
+        ticked_boxes = [state for label, state in label_state if state == 1]
+        no_ticked_boxes = len(ticked_boxes)
+        if no_ticked_boxes >= 1:
+            self.storage.connect()
+            for label, state in label_state:
+                if state == 1:
+                    self.storage.delete(label["text"])
+                    self.storage.commit()
+            self.storage.close()
+            self.alarm_box.delete()
+            self.alarm_box.show_alarm()
+        else:
+            messagebox.showerror(title = "Error!", message = "Choose an alarm!")
 
     def click_clone(self, event):
         label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
-        self.storage.connect()
-        for label, state in label_state:
-            if state == 1:
-                db_result = self.storage.query(label["text"])
-                time_index = time.time()
-                db_result = db_result[0]
-                self.storage.add(time_index, db_result[1], db_result[2], db_result[3], db_result[4], db_result[5] , db_result[6])
-                self.storage.commit()
+        ticked_boxes = [state for label, state in label_state if state == 1]
+        no_ticked_boxes = len(ticked_boxes)
+        if no_ticked_boxes >= 1:
+            self.storage.connect()
+            for label, state in label_state:
+                if state == 1:
+                    db_result = self.storage.query(label["text"])
+                    time_index = time.time()
+                    db_result = db_result[0]
+                    self.storage.add(time_index, db_result[1], db_result[2], db_result[3], db_result[4], db_result[5] , db_result[6])
+                    self.storage.commit()
 
-        self.storage.close()
-        self.alarm_box.show_alarm()
+            self.storage.close()
+            self.alarm_box.show_alarm()
+        else:
+            messagebox.showerror(title = "Error!", message = "Choose an alarm!")
+    def click_edit(self, event):
+        label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
+        ticked_boxes = [state for label, state in label_state if state == 1]
+        no_ticked_boxes = len(ticked_boxes)
+        if no_ticked_boxes == 1:
+            self.storage.connect()
+            for label, state in label_state:
+                if state == 1:
+                    edit_alarm = tki.Toplevel()
+                    edit_alarm.transient(self.master)
+
+                    edit_alarm.minsize(390, 350)
+                    edit_alarm.maxsize(390, 350)
+
+                    edit_alarm.title("Edit Alarm")
+
+                    db_result = self.storage.query(label["text"])
+                    pretime_index = db_result[0][0]
+                    pretime = db_result[0][4:6]
+                    pretone = db_result[0][6]
+                    predate = "{}/{}/{}".format(db_result[0][1],db_result[0][2],db_result[0][3])
+                    Config(edit_alarm, self.storage, self.alarm_box, pretime, pretone, predate, pretime_index)
+
+            self.storage.close()
+            self.alarm_box.show_alarm()
+        elif no_ticked_boxes > 1:
+            messagebox.showerror(title = "Error!", message = "Edit one at a time!")
+        else:
+            messagebox.showerror(title = "Error!", message = "Choose an alarm!")
