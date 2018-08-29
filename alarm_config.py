@@ -7,36 +7,45 @@ from storage import AlarmStorage
 import time
 
 
-class Add():
+class Config():
 
-    def __init__(self, master, storage, alarm_box):
+    def __init__(self, master, storage, alarm_box, pretime = None, pretone = None, predate = None, pretime_index = None):
         self.master = master
         self.storage = storage
         self.alarm_box = alarm_box
 
         self.time = None
-        self.date = None
-        self.tone = None
+        self.date = predate
+        self.tone = pretone
 
-        self.time_index = None
+        self.time_index = pretime_index
 
-        self.tens_hour = tki.Label(self.master, height = 2, width = 6, text = 0, font=("Helvetica", 16, "bold"))
+        if pretime == None:
+            pretime = ["00","00"]
+
+        self.tens_hour = tki.Label(self.master, height = 2, width = 6, text = int(pretime[0][0]), font=("Helvetica", 16, "bold"))
         self.tens_hour.grid(row = 0, column = 0, padx = [2,10], pady = [20,0])
 
-        self.units_hour = tki.Label(self.master, height = 2, width = 6, text = 0, font=("Helvetica", 16, "bold"))
+        self.units_hour = tki.Label(self.master, height = 2, width = 6, text = int(pretime[0][1]), font=("Helvetica", 16, "bold"))
         self.units_hour.grid(row = 0, column = 1, padx = 10, pady = [20,0])
 
         self.separator = tki.Label(self.master, height = 2, width = 1, text = ":", font=("Helvetica", 16, "bold"))
         self.separator.grid(row = 0, column = 2, padx = 5, pady = [20,0])
 
-        self.tens_minutes = tki.Label(self.master, height = 2, width = 6, text = 0, font=("Helvetica", 16, "bold"))
+        self.tens_minutes = tki.Label(self.master, height = 2, width = 6, text = int(pretime[1][0]), font=("Helvetica", 16, "bold"))
         self.tens_minutes.grid(row = 0, column = 3, padx = 10, pady = [20,0])
 
-        self.units_minutes = tki.Label(self.master, height = 2, width = 6, text = 0, font=("Helvetica", 16, "bold"))
+        self.units_minutes = tki.Label(self.master, height = 2, width = 6, text = int(pretime[1][1]), font=("Helvetica", 16, "bold"))
         self.units_minutes.grid(row = 0, column = 4, padx = 10, pady = [20,0])
 
-        self.add_button = tki.Button(self.master, text = "Add Alarm", padx = 35, command = self.get_date)
-        self.add_button.grid(row = 3, column = 2, columnspan = 3, pady = [120,0])
+        if self.time_index == None:
+            self.add_button = tki.Button(self.master, text = "Add Alarm", padx = 35)
+            self.add_button.grid(row = 3, column = 2, columnspan = 3, pady = [120,0])
+            self.add_button.bind("<ButtonRelease-1>", self.add_alarm)
+        else:
+            self.update_button = tki.Button(self.master, text = "Update Alarm", padx = 35)
+            self.update_button.grid(row = 3, column = 2, columnspan = 3, pady = [120,0])
+            self.update_button.bind("<ButtonRelease-1>", self.update_alarm)
 
         up_arrow = tki.PhotoImage(file = "icons/arrow-141-16.gif")
         down_arrow = tki.PhotoImage(file = "icons/arrow-204-16.gif")
@@ -73,7 +82,7 @@ class Add():
         self.decrease_four.image = down_arrow
         self.decrease_four.grid(row = 2, column = 4)
 
-        self.calendar_frame = CalendarFrame(master)
+        self.calendar_frame = CalendarFrame(master, self.date)
         self.calendar_frame.grid(row = 3, column = 0, columnspan = 2, pady = [50,10])
 
         self.tone_box = tki.LabelFrame(self.master)
@@ -95,8 +104,9 @@ class Add():
         self.decrease_four.bind("<ButtonRelease-1>", self.decrease)
 
         self.tone_click.bind("<ButtonRelease-1>", self.get_tone)
-        self.add_button.bind("<ButtonRelease-1>", self.add_alarm)
 
+        if self.tone != None:
+            self.get_tone()
 
     def increase(self, event):
         if self.increase_one.winfo_id == event.widget.winfo_id:
@@ -125,9 +135,10 @@ class Add():
             self.units_minutes["text"] -= 1
 
 
-    def get_tone(self, event):
-        self.tone = filedialog.askopenfilename(initialdir = "/",title = "Select tone",
-                    filetypes = (("mp3 files","*.mp3"),), parent = self.master)
+    def get_tone(self, event = None):
+        if self.tone == None:
+            self.tone = filedialog.askopenfilename(initialdir = "/",title = "Select tone",
+                         filetypes = (("mp3 files","*.mp3"),), parent = self.master)
         try:
             self.stripped_tone = self.tone.split("/")[-1]
             self.tone_name["state"] = tki.NORMAL
@@ -145,16 +156,23 @@ class Add():
             self.date = self.calendar_frame.date_box.get().split("/")
             self.date = {"year":self.date[2], "month":self.date[1], "day":self.date[0]}
 
-        except ValueError:
+        except:
             self.date = None
 
     def to_db(self):
-        self.time_index = time.time()
-        self.storage.connect()
-        self.storage.add(self.time_index, self.date["year"], self.date["month"], self.date["day"],
-                     self.time["hour"], self.time["minute"], self.tone)
-        self.storage.commit()
-        self.storage.close()
+        if self.time_index == None:
+            self.time_index = time.time()
+            self.storage.connect()
+            self.storage.add(self.time_index, self.date["year"], self.date["month"], self.date["day"],
+                         self.time["hour"], self.time["minute"], self.tone)
+            self.storage.commit()
+            self.storage.close()
+        else:
+            self.storage.connect()
+            self.storage.update(self.time_index, self.date["year"], self.date["month"], self.date["day"],
+                         self.time["hour"], self.time["minute"], self.tone)
+            self.storage.commit()
+            self.storage.close()
 
     def add_alarm(self, event):
         self.get_date()
@@ -170,6 +188,19 @@ class Add():
             self.alarm_box.show_alarm()
             self.close()
 
+    def update_alarm(self, event):
+        self.get_date()
+        self.get_time()
+        if self.date is None:
+            messagebox.showerror(title = "Error!", message = "Please choose a date!")
+
+        elif self.tone is None:
+            messagebox.showerror(title = "Error!", message = "Please choose a tone!")
+
+        else:
+            self.to_db()
+            self.alarm_box.show_alarm()
+            self.close()
 
     def close(self):
         self.master.destroy()
