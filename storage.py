@@ -15,6 +15,10 @@ class AlarmStorage():
     def add(self, time, year, month, day, hour, minute, tone):
         self.cursor.execute("INSERT INTO Alarms (Time, Year, Month, Day, Hour, Minute, Tone) VALUES (?, ?, ?, ?, ?, ?, ?);", (time, year, month, day, hour, minute, tone))
 
+    def update(self, time, year, month, day, hour, minute, tone):
+        self.cursor.execute("UPDATE Alarms SET Year = ?, Month = ?, Day = ?, Hour = ?, Minute = ?, Tone = ? where Time = ?;",
+         (year, month, day, hour, minute, tone, time))
+
     def delete(self, time):
         self.cursor.execute("DELETE FROM Alarms WHERE Time = ?;", (time,))
 
