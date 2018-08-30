@@ -109,16 +109,22 @@ class Config():
             self.get_tone()
 
     def increase(self, event):
-        if self.increase_one.winfo_id == event.widget.winfo_id:
-            self.tens_hour["text"] += 1
+        if self.increase_one.winfo_id == event.widget.winfo_id and self.tens_hour["text"] <= 1:
+            if self.tens_hour["text"] == 1 and self.units_hour["text"] > 3:
+                pass
+            else:
+                self.tens_hour["text"] += 1
 
-        elif self.increase_two.winfo_id == event.widget.winfo_id:
-            self.units_hour["text"] += 1
+        elif self.increase_two.winfo_id == event.widget.winfo_id and self.units_hour["text"] <= 8:
+            if self.tens_hour["text"] == 2 and self.units_hour["text"] == 3:
+                pass
+            else:
+                self.units_hour["text"] += 1
 
-        elif self.increase_three.winfo_id == event.widget.winfo_id:
+        elif self.increase_three.winfo_id == event.widget.winfo_id and self.tens_minutes["text"] <= 4:
             self.tens_minutes["text"] += 1
 
-        elif self.increase_four.winfo_id == event.widget.winfo_id:
+        elif self.increase_four.winfo_id == event.widget.winfo_id and self.units_minutes["text"] <= 8:
             self.units_minutes["text"] += 1
 
     def decrease(self, event):
