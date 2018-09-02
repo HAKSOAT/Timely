@@ -137,14 +137,18 @@ class Config():
         elif self.decrease_three.winfo_id == event.widget.winfo_id and self.tens_minutes["text"] >= 1:
             self.tens_minutes["text"] -= 1
 
-        elif self.decrease_four.winfo_id == event.widget.winfo_id and self.unit_minutes["text"] >= 1:
+        elif self.decrease_four.winfo_id == event.widget.winfo_id and self.units_minutes["text"] >= 1:
             self.units_minutes["text"] -= 1
 
 
     def get_tone(self, event = None):
-        if self.tone == None:
-            self.tone = filedialog.askopenfilename(initialdir = "/",title = "Select tone",
-                         filetypes = (("mp3 files","*.mp3"),), parent = self.master)
+        self.display_tone_name()
+        self.tone = filedialog.askopenfilename(initialdir = "/", initialfile = "", title = "Select tone",
+                     filetypes = (("mp3 files","*.mp3"),), parent = self.master)
+        self.display_tone_name()
+
+
+    def display_tone_name(self):
         try:
             self.stripped_tone = self.tone.split("/")[-1]
             self.tone_name["state"] = tki.NORMAL
@@ -152,7 +156,6 @@ class Config():
             self.tone_name["state"] = tki.DISABLED
         except AttributeError:
             self.tone = None
-
 
     def get_time(self):
         self.time = [str(self.tens_hour["text"]) + str(self.units_hour["text"]), str(self.tens_minutes["text"]) + str(self.units_minutes["text"])]
@@ -191,6 +194,8 @@ class Config():
 
         else:
             self.to_db()
+            self.alarm_box.get_ringtime()
+            self.alarm_box.call_popup()
             self.alarm_box.show_alarm()
             self.close()
 
@@ -205,6 +210,8 @@ class Config():
 
         else:
             self.to_db()
+            self.alarm_box.get_ringtime()
+            self.alarm_box.call_popup()
             self.alarm_box.show_alarm()
             self.close()
 
