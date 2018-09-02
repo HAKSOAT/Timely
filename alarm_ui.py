@@ -47,6 +47,8 @@ class AlarmUI():
         self.set_alarms_box.grid(row = 3, padx = [2,0], pady = [7, 0], column = 0, columnspan = 8)
 
         self.alarm_box = AlarmBox(self.master, self.storage)
+        self.alarm_box.get_ringtime()
+        self.alarm_box.call_popup()
         self.alarm_box.show_alarm()
 
         self.buttons[0].bind("<ButtonRelease-1>", self.click_add)
@@ -80,6 +82,8 @@ class AlarmUI():
                     self.storage.commit()
             self.storage.close()
             self.alarm_box.delete()
+            self.alarm_box.get_ringtime()
+            self.alarm_box.call_popup()
             self.alarm_box.show_alarm()
         else:
             messagebox.showerror(title = "Error!", message = "Choose an alarm!")
@@ -99,7 +103,10 @@ class AlarmUI():
                     self.storage.commit()
 
             self.storage.close()
+            self.alarm_box.get_ringtime()
+            self.alarm_box.call_popup()
             self.alarm_box.show_alarm()
+
         else:
             messagebox.showerror(title = "Error!", message = "Choose an alarm!")
     def click_edit(self, event):
@@ -126,6 +133,8 @@ class AlarmUI():
                     Config(edit_alarm, self.storage, self.alarm_box, pretime, pretone, predate, pretime_index)
 
             self.storage.close()
+            self.alarm_box.get_ringtime()
+            self.alarm_box.call_popup()
             self.alarm_box.show_alarm()
         elif no_ticked_boxes > 1:
             messagebox.showerror(title = "Error!", message = "Edit one at a time!")
