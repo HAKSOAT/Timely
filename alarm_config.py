@@ -2,17 +2,16 @@ import tkinter as tki
 from tkinter import filedialog
 from tkinter import messagebox
 from calendar_picker.CalendarDialog import CalendarFrame
-
-from storage import AlarmStorage
 import time
 
 
 class Config():
 
-    def __init__(self, master, storage, alarm_box, pretime = None, pretone = None, predate = None, pretime_index = None):
+    def __init__(self, master, storage, alarm_box, ringer, pretime = None, pretone = None, predate = None, pretime_index = None):
         self.master = master
         self.storage = storage
         self.alarm_box = alarm_box
+        self.ringer = ringer
 
         self.time = None
         self.date = predate
@@ -194,8 +193,8 @@ class Config():
 
         else:
             self.to_db()
-            self.alarm_box.get_ringtime()
-            self.alarm_box.call_popup()
+            self.ringer.get_ringtime()
+            self.ringer.call_popup()
             self.alarm_box.show_alarm()
             self.close()
 
@@ -210,8 +209,8 @@ class Config():
 
         else:
             self.to_db()
-            self.alarm_box.get_ringtime()
-            self.alarm_box.call_popup()
+            self.ringer.get_ringtime()
+            self.ringer.call_popup()
             self.alarm_box.show_alarm()
             self.close()
 

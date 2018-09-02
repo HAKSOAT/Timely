@@ -1,9 +1,9 @@
 import tkinter as tki
+from tkinter import filedialog, messagebox
 from alarm_config import Config
 from alarm_box import AlarmBox
 from storage import AlarmStorage
-from tkinter import filedialog
-from tkinter import messagebox
+from ringer import Ringer
 from checked_buttons import CheckedButtons
 import os
 import time
@@ -47,9 +47,11 @@ class AlarmUI():
         self.set_alarms_box.grid(row = 3, padx = [2,0], pady = [7, 0], column = 0, columnspan = 8)
 
         self.alarm_box = AlarmBox(self.master, self.storage)
-        self.alarm_box.get_ringtime()
-        self.alarm_box.call_popup()
+        self.ringer = Ringer(self.master, self.storage, self.alarm_box)
+        self.ringer.get_ringtime()
+        self.ringer.call_popup()
         self.alarm_box.show_alarm()
+
 
         self.buttons[0].bind("<ButtonRelease-1>", self.click_add)
         self.buttons[1].bind("<ButtonRelease-1>", self.click_delete)
@@ -68,7 +70,7 @@ class AlarmUI():
 
         add_alarm.title("Add Alarm")
 
-        Config(add_alarm, self.storage, self.alarm_box)
+        Config(add_alarm, self.storage, self.alarm_box, self.ringer)
 
     def click_delete(self, event):
         label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
@@ -82,8 +84,8 @@ class AlarmUI():
                     self.storage.commit()
             self.storage.close()
             self.alarm_box.delete()
-            self.alarm_box.get_ringtime()
-            self.alarm_box.call_popup()
+            self.ringer.get_ringtime()
+            self.ringer.call_popup()
             self.alarm_box.show_alarm()
         else:
             messagebox.showerror(title = "Error!", message = "Choose an alarm!")
@@ -103,8 +105,8 @@ class AlarmUI():
                     self.storage.commit()
 
             self.storage.close()
-            self.alarm_box.get_ringtime()
-            self.alarm_box.call_popup()
+            self.ringer.get_ringtime()
+            self.ringer.call_popup()
             self.alarm_box.show_alarm()
 
         else:
@@ -130,12 +132,14 @@ class AlarmUI():
                     pretime = db_result[0][4:6]
                     pretone = db_result[0][6]
                     predate = "{}/{}/{}".format(db_result[0][1],db_result[0][2],db_result[0][3])
-                    Config(edit_alarm, self.storage, self.alarm_box, pretime, pretone, predate, pretime_index)
+                    Config(edit_alarm, self.storage, self.alarm_box, self.ringer,
+                            pretime, pretone, predate, pretime_index)
 
             self.storage.close()
-            self.alarm_box.get_ringtime()
-            self.alarm_box.call_popup()
+            self.ringer.get_ringtime()
+            self.ringer.call_popup()
             self.alarm_box.show_alarm()
+
         elif no_ticked_boxes > 1:
             messagebox.showerror(title = "Error!", message = "Edit one at a time!")
         else:
