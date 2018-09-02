@@ -1,8 +1,7 @@
 import tkinter as tki
-import threading
 from datetime import datetime as dt
 import time
-
+from pygame import mixer
 from popup import AlarmPopUp
 
 class AlarmBox():
@@ -23,9 +22,7 @@ class AlarmBox():
         self.alarm_canv["yscrollcommand"] = self.scrollbar.set
         self.checklabel_states = []
 
-        self.trigger_thread = None
-
-        self.create_thread()
+        self.ascending_ringtime = []
 
     def show_alarm(self):
         self.checklabel_states = []
@@ -61,11 +58,14 @@ class AlarmBox():
         self.alarm_canv.create_window((checkbox_x,checkbox_y + y),
                                        window = self.checkbutton, anchor = "n")
 
-    def create_thread(self):
-        self.trigger_thread = threading.Timer(1, self.trigger)
-        self.trigger_thread.start()
+    def __delete_alarm(self, time):
+        self.storage.connect()
+        self.storage.delete(time)
+        self.storage.commit()
+        self.storage.close()
 
-    def trigger(self):
+    def get_ringtime(self):
+        self.ascending_ringtime = []
         self.storage.connect()
         db_result = self.storage.query()
 
@@ -75,28 +75,31 @@ class AlarmBox():
             set_time = dt.now().replace(year = int(each[1]), month = int(each[2]), day = int(each[3]),
                         hour = int(each[4]), minute = int(each[5]), second = 0)
             time_left = set_time - dt.now()
-            ringtime.append((time_left.total_seconds(), each[6], [each[0], each[4], each[5]]))
+            tone = each[6]
+            time_index = each[0]
+            hour = each[4]
+            minute = each[5]
+            ringtime.append((time_left.total_seconds(), tone, [time_index, hour, minute]))
 
-        ascending_ringtime = sorted(ringtime, key = lambda x: x[0])
+        self.ascending_ringtime = sorted(ringtime, key = lambda x: x[0])
 
-        for each in ascending_ringtime:
-            try:
-                time.sleep(int(each[0]))
-                self.popup = tki.Toplevel()
-                self.popup.transient(self.master)
+    def call_popup(self):
+        for each in self.ascending_ringtime:
+            if int(each[0]) >= 0:
+                self.master.after(int(each[0]) * 1000, self.pop_up, each[2][0], each[1], each[2][1], each[2][2])
+            else:
+                self.__delete_alarm(each[2][0])
 
-                self.popup.minsize(390, 350)
-                self.popup.maxsize(390, 350)
+    def pop_up(self, time_index, tone, hour, minute):
+        pop_up = tki.Toplevel()
 
-                self.popup.title("Pop Up")
-                print(each[0])
-                AlarmPopUp(self.popup, self.storage, each[1], each[2][1], each[2][2])
+        pop_up.transient(self.master)
 
-            except ValueError:
-                self.storage.connect()
-                self.storage.delete(each[2][0])
-                self.storage.commit()
-                self.storage.close()
+        pop_up.minsize(390, 350)
+        pop_up.maxsize(390, 350)
+
+        pop_up.title("Arise And Shine!!!")
+        AlarmPopUp(pop_up, self.storage, time_index,tone, hour, minute)
 
 
     def delete(self):
