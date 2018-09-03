@@ -45,7 +45,7 @@ class AlarmPopUp():
         close = tki.Button(self.pop_up, text = "Dismiss", pady = 10, command = self.click_dismiss)
         close.pack(fill = tki.X, side = tki.LEFT, expand = True)
 
-        snooze = tki.Button(self.pop_up, text = "Snooze", pady = 10)
+        snooze = tki.Button(self.pop_up, text = "Snooze", pady = 10, command = self.click_snooze)
         snooze.pack(fill = tki.X, side = tki.LEFT, expand = True)
 
     def click_dismiss(self):
@@ -57,23 +57,29 @@ class AlarmPopUp():
         self.pop_up.destroy()
 
     def click_snooze(self):
+
         if self.minute <= 54:
             self.minute += 5
         elif self.minute == 55:
-            self.minute = 00
+            self.minute = 0
             self.hour += 1
+            self.apply_snooze_increments()
         elif self.minute == 56:
             self.minute = 1
             self.hour += 1
+            self.apply_snooze_increments()
         elif self.minute == 57:
             self.minute = 2
             self.hour += 1
+            self.apply_snooze_increments()
         elif self.minute == 58:
             self.minute = 3
             self.hour += 1
+            self.apply_snooze_increments()
         elif self.minute == 59:
             self.minute = 4
             self.hour += 1
+            self.apply_snooze_increments()
 
         self.hour = "{:02d}".format(self.hour)
         self.minute = "{:02d}".format(self.minute)
@@ -85,3 +91,18 @@ class AlarmPopUp():
         self.storage.close()
 
         self.click_dismiss()
+
+    def apply_snooze_increments(self):
+        if self.hour == 24:
+            self.hour = 0
+            self.day += 1
+            if self.day == 31 and self.month in [4, 6, 9, 11]:
+                self.month += 1
+                if self.month == 13:
+                    self.month = 1
+                    self.year += 1
+            elif self.day == 32 and self.month not in [4, 6, 9, 11]:
+                self.month += 1
+                if self.month == 13:
+                    self.month = 1
+                    self.year += 1
