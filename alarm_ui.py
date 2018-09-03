@@ -23,13 +23,12 @@ class AlarmUI():
             self.storage = AlarmStorage("./")
             self.storage.create()
 
+        self.menu_list = ["Alarm", "Timer", "Settings"]
         self.menu = tki.Menu(self.master)
         self.master.configure(menu = self.menu)
-        self.menu.add_cascade(label = "Alarm")
-        self.menu.add_cascade(label = "Pomodoro")
-        self.menu.add_cascade(label = "Stop Watch")
-        self.menu.add_cascade(label = "Settings")
-        self.menu.add_cascade(label = "Help")
+
+        for each in self.menu_list:
+            self.menu.add_cascade(label = each)
 
         self.button_images = ["icons/plus-16.gif", "icons/minus-16.gif", "icons/edit-11-16.gif", "icons/copy-16.gif"]
         self.button_text = ["Add", "Delete", "Edit", "Clone"]
