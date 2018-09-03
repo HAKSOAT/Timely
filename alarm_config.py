@@ -3,6 +3,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from calendar_picker.CalendarDialog import CalendarFrame
 import time
+from datetime import datetime as dt
 
 
 class Config():
@@ -159,11 +160,12 @@ class Config():
     def get_time(self):
         self.time = [str(self.tens_hour["text"]) + str(self.units_hour["text"]), str(self.tens_minutes["text"]) + str(self.units_minutes["text"])]
         self.time = {"hour": self.time[0], "minute": self.time[1]}
+        return self.time
     def get_date(self):
         try:
             self.date = self.calendar_frame.date_box.get().split("/")
             self.date = {"year":self.date[2], "month":self.date[1], "day":self.date[0]}
-
+            return self.date
         except:
             self.date = None
 
@@ -183,8 +185,11 @@ class Config():
             self.storage.close()
 
     def add_alarm(self, event):
-        self.get_date()
-        self.get_time()
+        date = self.get_date()
+        time = self.get_time()
+        time_difference = dt.now().replace(year = int(date["year"]), month = int(date["month"]),
+                            day = int(date["day"]), hour = int(time["hour"]), minute = int(time["minute"]), second = 0) - dt.now()
+        seconds_difference = time_difference.total_seconds()
         if self.date is None:
             messagebox.showerror(title = "Error!", message = "Please choose a date!")
 
@@ -192,11 +197,14 @@ class Config():
             messagebox.showerror(title = "Error!", message = "Please choose a tone!")
 
         else:
-            self.to_db()
-            self.ringer.get_ringtime()
-            self.ringer.call_popup()
-            self.alarm_box.show_alarm()
-            self.close()
+            if seconds_difference <= 0:
+                messagebox.showerror(title = "Error!", message = "The chosen time is in the past!")
+            else:
+                self.to_db()
+                self.ringer.get_ringtime()
+                self.ringer.call_popup()
+                self.alarm_box.show_alarm()
+                self.close()
 
     def update_alarm(self, event):
         self.get_date()
