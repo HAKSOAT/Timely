@@ -43,9 +43,6 @@ class AlarmUI():
             button.grid(row = 0, column = column_value, sticky = tki.N + tki.E + tki.S + tki.W)
             self.buttons.append(button)
 
-        self.set_alarms_box = tki.LabelFrame(self.master, text = "Up Next", height = 68, width = 585, bg = "#ffffff")
-        self.set_alarms_box.grid(row = 3, padx = [2,0], pady = [7, 0], column = 0, columnspan = 8)
-
         self.alarm_box = AlarmBox(self.master, self.storage)
         self.ringer = Ringer(self.master, self.storage, self.alarm_box)
         self.ringer.get_ringtime()
