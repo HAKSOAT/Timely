@@ -187,9 +187,7 @@ class Config():
     def add_alarm(self, event):
         date = self.get_date()
         time = self.get_time()
-        time_difference = dt.now().replace(year = int(date["year"]), month = int(date["month"]),
-                            day = int(date["day"]), hour = int(time["hour"]), minute = int(time["minute"]), second = 0) - dt.now()
-        seconds_difference = time_difference.total_seconds()
+        
         if self.date is None:
             messagebox.showerror(title = "Error!", message = "Please choose a date!")
 
@@ -197,6 +195,9 @@ class Config():
             messagebox.showerror(title = "Error!", message = "Please choose a tone!")
 
         else:
+            time_difference = dt.now().replace(year = int(date["year"]), month = int(date["month"]),
+                            day = int(date["day"]), hour = int(time["hour"]), minute = int(time["minute"]), second = 0) - dt.now()
+            seconds_difference = time_difference.total_seconds()
             if seconds_difference <= 0:
                 messagebox.showerror(title = "Error!", message = "The chosen time is in the past!")
             else:
