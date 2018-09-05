@@ -12,7 +12,7 @@ class AlarmBox():
         self.alarm_frame = tki.Frame(self.master, padx = 7, pady = 5)
         self.alarm_frame.grid(row = 1, column = 0, columnspan = 8)
 
-        self.alarm_canv = tki.Canvas(self.alarm_frame, height = 350, width = 570, bg = "#000fff000")
+        self.alarm_canv = tki.Canvas(self.alarm_frame, height = 350, width = 570, bg = "#00b300")
         self.alarm_canv.pack(side = tki.LEFT, fill = tki.BOTH)
 
         self.scrollbar = tki.Scrollbar(self.alarm_frame, command = self.alarm_canv.yview)
