@@ -61,8 +61,8 @@ class AlarmUI():
 
         add_alarm.transient(self.master)
 
-        add_alarm.minsize(390, 350)
-        add_alarm.maxsize(390, 350)
+        add_alarm.minsize(433, 370)
+        add_alarm.maxsize(433, 370)
 
         add_alarm.title("Add Alarm")
 
@@ -118,8 +118,8 @@ class AlarmUI():
                     edit_alarm = tki.Toplevel()
                     edit_alarm.transient(self.master)
 
-                    edit_alarm.minsize(390, 350)
-                    edit_alarm.maxsize(390, 350)
+                    edit_alarm.minsize(433, 370)
+                    edit_alarm.maxsize(433, 370)
 
                     edit_alarm.title("Edit Alarm")
 
