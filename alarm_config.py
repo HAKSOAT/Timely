@@ -106,7 +106,7 @@ class Config():
         self.tone_click.bind("<ButtonRelease-1>", self.get_tone)
 
         if self.tone != None:
-            self.get_tone()
+            self.display_tone_name()
 
     def increase(self, event):
         if self.increase_one.winfo_id == event.widget.winfo_id and self.tens_hour["text"] <= 1:

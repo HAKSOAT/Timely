@@ -23,7 +23,7 @@ class AlarmUI():
             self.storage = AlarmStorage("./")
             self.storage.create()
 
-        self.menu_list = ["Alarm", "Timer", "Settings"]
+        self.menu_list = ["Alarm", "Settings"]
         self.menu = tki.Menu(self.master)
         self.master.configure(menu = self.menu)
 

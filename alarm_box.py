@@ -33,12 +33,12 @@ class AlarmBox():
             set_time = each[4:6]
             set_date = each[1:4]
             db_time = each[0]
-            self.add_alarm(260, self.point_y, set_time, set_date, db_time)
+            self.add_alarm(249, self.point_y, set_time, set_date, db_time)
             self.point_y += 50
 
     def add_alarm(self, x, y, time, date, db_time):
-        checkbox_x = 26
-        checkbox_y = 10
+        checkbox_x = 35
+        checkbox_y = 7
         time = "{}:{}".format(time[0], time[1])
         date = "{}-{}-{}".format(date[2], date[1], date[0])
 
@@ -48,8 +48,8 @@ class AlarmBox():
                             text = "{}\t\t\t\t{}".format(time, date), bg = "#ffffff")
 
         state = tki.IntVar()
-        self.checkbutton = tki.Checkbutton(self.alarm_canv, bg = "#000fff000", variable = state,
-                            indicatoron = 1, width = 1)
+        self.checkbutton = tki.Checkbutton(self.alarm_canv, selectcolor = "#00b300", variable = state,
+                            indicatoron = 0, width = 1, height = 0)
 
         self.checklabel_states.append([self.checkbutton, state, self.alarm_label])
 
