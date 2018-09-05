@@ -4,8 +4,8 @@ import threading
 
 window = tki.Tk()
 
-window.minsize(600, 430)
-window.maxsize(600, 430)
+window.minsize(600, 395)
+window.maxsize(600, 395)
 window.title("Timely")
 
 AlarmUI(window)
