@@ -23,64 +23,49 @@ class Config():
         if pretime == None:
             pretime = ["00","00"]
 
-        self.tens_hour = tki.Label(self.master, height = 2, width = 6, text = int(pretime[0][0]), font=("Helvetica", 16, "bold"))
-        self.tens_hour.grid(row = 0, column = 0, padx = [2,10], pady = [20,0])
+        self.indicator_labels = [int(pretime[0][0]), int(pretime[0][1]), ":", int(pretime[1][0]), int(pretime[1][1])]
 
-        self.units_hour = tki.Label(self.master, height = 2, width = 6, text = int(pretime[0][1]), font=("Helvetica", 16, "bold"))
-        self.units_hour.grid(row = 0, column = 1, padx = 10, pady = [20,0])
+        self.indicators = []
 
-        self.separator = tki.Label(self.master, height = 2, width = 1, text = ":", font=("Helvetica", 16, "bold"))
-        self.separator.grid(row = 0, column = 2, padx = 5, pady = [20,0])
+        column = 0
+        for label in self.indicator_labels:
+            if column == 0:
+                padx = [2, 10]
+            elif column == 2:
+                padx = 5
+            else:
+                padx = 10
+            temp_indicator = tki.Label(self.master, height = 2, width = 6, text = label, font=("Helvetica", 16, "bold"))
+            temp_indicator.grid(row = 0, column = column, padx = padx, pady = [20,0])
+            self.indicators.append(temp_indicator)
+            column += 1
 
-        self.tens_minutes = tki.Label(self.master, height = 2, width = 6, text = int(pretime[1][0]), font=("Helvetica", 16, "bold"))
-        self.tens_minutes.grid(row = 0, column = 3, padx = 10, pady = [20,0])
+        up_arrow = tki.PhotoImage(file = "icons/arrow-141-16.gif")
+        down_arrow = tki.PhotoImage(file = "icons/arrow-204-16.gif")
+        self.navigate_buttons = []
 
-        self.units_minutes = tki.Label(self.master, height = 2, width = 6, text = int(pretime[1][1]), font=("Helvetica", 16, "bold"))
-        self.units_minutes.grid(row = 0, column = 4, padx = 10, pady = [20,0])
+        for column in range(5):
+            if column == 2:
+                continue
+            temp_increase = tki.Button(self.master, image = up_arrow)
+            temp_increase.image = up_arrow
+            temp_increase.grid(row = 1, column = column, pady = [20,0])
+            self.navigate_buttons.append(temp_increase)
+
+            temp_decrease = tki.Button(self.master, image = down_arrow)
+            temp_decrease.image = down_arrow
+            temp_decrease.grid(row = 2, column = column)
+            self.navigate_buttons.append(temp_decrease)
+
+
 
         if self.time_index == None:
             self.add_button = tki.Button(self.master, text = "Add Alarm", padx = 35)
             self.add_button.grid(row = 3, column = 2, columnspan = 3, pady = [120,0])
-            self.add_button.bind("<ButtonRelease-1>", self.add_alarm)
+
         else:
             self.update_button = tki.Button(self.master, text = "Update Alarm", padx = 35)
             self.update_button.grid(row = 3, column = 2, columnspan = 3, pady = [120,0])
-            self.update_button.bind("<ButtonRelease-1>", self.update_alarm)
-
-        up_arrow = tki.PhotoImage(file = "icons/arrow-141-16.gif")
-        down_arrow = tki.PhotoImage(file = "icons/arrow-204-16.gif")
-
-        self.increase_one = tki.Button(self.master, image = up_arrow)
-        self.increase_one.image = up_arrow
-        self.increase_one.grid(row = 1, column = 0, pady = [20,0])
-
-        self.increase_two = tki.Button(self.master, image = up_arrow)
-        self.increase_two.image = up_arrow
-        self.increase_two.grid(row = 1, column = 1, pady = [20,0])
-
-        self.increase_three = tki.Button(self.master, image = up_arrow)
-        self.increase_three.image = up_arrow
-        self.increase_three.grid(row = 1, column = 3, pady = [20,0])
-
-        self.increase_four = tki.Button(self.master, image = up_arrow)
-        self.increase_four.image = up_arrow
-        self.increase_four.grid(row = 1, column = 4, pady = [20,0])
-
-        self.decrease_one = tki.Button(self.master, image = down_arrow)
-        self.decrease_one.image = down_arrow
-        self.decrease_one.grid(row = 2, column = 0)
-
-        self.decrease_two = tki.Button(self.master, image = down_arrow)
-        self.decrease_two.image = down_arrow
-        self.decrease_two.grid(row = 2, column = 1)
-
-        self.decrease_three = tki.Button(self.master, image = down_arrow)
-        self.decrease_three.image = down_arrow
-        self.decrease_three.grid(row = 2, column = 3)
-
-        self.decrease_four = tki.Button(self.master, image = down_arrow)
-        self.decrease_four.image = down_arrow
-        self.decrease_four.grid(row = 2, column = 4)
 
         self.calendar_frame = CalendarFrame(master, self.date)
         self.calendar_frame.grid(row = 3, column = 0, columnspan = 2, pady = [50,10])
@@ -93,52 +78,60 @@ class Config():
         self.tone_click = tki.Button(self.tone_box, text = "Choose a tone")
         self.tone_click.grid(row = 1, column = 0)
 
-        self.increase_one.bind("<ButtonRelease-1>", self.increase)
-        self.increase_two.bind("<ButtonRelease-1>", self.increase)
-        self.increase_three.bind("<ButtonRelease-1>", self.increase)
-        self.increase_four.bind("<ButtonRelease-1>", self.increase)
-
-        self.decrease_one.bind("<ButtonRelease-1>", self.decrease)
-        self.decrease_two.bind("<ButtonRelease-1>", self.decrease)
-        self.decrease_three.bind("<ButtonRelease-1>", self.decrease)
-        self.decrease_four.bind("<ButtonRelease-1>", self.decrease)
-
-        self.tone_click.bind("<ButtonRelease-1>", self.get_tone)
+        self.bind_widgets()
 
         if self.tone != None:
             self.display_tone_name()
 
+    def bind_widgets(self):
+        if self.time_index == None:
+            self.add_button.bind("<ButtonRelease-1>", self.add_alarm)
+        else:
+            self.update_button.bind("<ButtonRelease-1>", self.update_alarm)
+
+        self.navigate_buttons[0].bind("<ButtonRelease-1>", self.increase)
+        self.navigate_buttons[2].bind("<ButtonRelease-1>", self.increase)
+        self.navigate_buttons[4].bind("<ButtonRelease-1>", self.increase)
+        self.navigate_buttons[6].bind("<ButtonRelease-1>", self.increase)
+
+        self.navigate_buttons[1].bind("<ButtonRelease-1>", self.decrease)
+        self.navigate_buttons[3].bind("<ButtonRelease-1>", self.decrease)
+        self.navigate_buttons[5].bind("<ButtonRelease-1>", self.decrease)
+        self.navigate_buttons[7].bind("<ButtonRelease-1>", self.decrease)
+
+        self.tone_click.bind("<ButtonRelease-1>", self.get_tone)
+
     def increase(self, event):
-        if self.increase_one.winfo_id == event.widget.winfo_id and self.tens_hour["text"] <= 1:
-            if self.tens_hour["text"] == 1 and self.units_hour["text"] > 3:
+        if self.navigate_buttons[0].winfo_id == event.widget.winfo_id and self.indicators[0]["text"] <= 1:
+            if self.indicators[0]["text"] == 1 and self.indicators[1]["text"] > 3:
                 pass
             else:
-                self.tens_hour["text"] += 1
+                self.indicators[0]["text"] += 1
 
-        elif self.increase_two.winfo_id == event.widget.winfo_id and self.units_hour["text"] <= 8:
-            if self.tens_hour["text"] == 2 and self.units_hour["text"] == 3:
+        elif self.navigate_buttons[2].winfo_id == event.widget.winfo_id and self.indicators[1]["text"] <= 8:
+            if self.indicators[0]["text"] == 2 and self.indicators[1]["text"] == 3:
                 pass
             else:
-                self.units_hour["text"] += 1
+                self.indicators[1]["text"] += 1
 
-        elif self.increase_three.winfo_id == event.widget.winfo_id and self.tens_minutes["text"] <= 4:
-            self.tens_minutes["text"] += 1
+        elif self.navigate_buttons[4].winfo_id == event.widget.winfo_id and self.indicators[3]["text"] <= 4:
+            self.indicators[3]["text"] += 1
 
-        elif self.increase_four.winfo_id == event.widget.winfo_id and self.units_minutes["text"] <= 8:
-            self.units_minutes["text"] += 1
+        elif self.navigate_buttons[6].winfo_id == event.widget.winfo_id and self.indicators[4]["text"] <= 8:
+            self.indicators[4]["text"] += 1
 
     def decrease(self, event):
-        if self.decrease_one.winfo_id == event.widget.winfo_id and self.tens_hour["text"] >= 1:
-            self.tens_hour["text"] -= 1
+        if self.navigate_buttons[1].winfo_id == event.widget.winfo_id and self.indicators[0]["text"] >= 1:
+            self.indicators[0]["text"] -= 1
 
-        elif self.decrease_two.winfo_id == event.widget.winfo_id and self.units_hour["text"] >= 1:
-            self.units_hour["text"] -= 1
+        elif self.navigate_buttons[3].winfo_id == event.widget.winfo_id and self.indicators[1]["text"] >= 1:
+            self.indicators[1]["text"] -= 1
 
-        elif self.decrease_three.winfo_id == event.widget.winfo_id and self.tens_minutes["text"] >= 1:
-            self.tens_minutes["text"] -= 1
+        elif self.navigate_buttons[5].winfo_id == event.widget.winfo_id and self.indicators[3]["text"] >= 1:
+            self.indicators[3]["text"] -= 1
 
-        elif self.decrease_four.winfo_id == event.widget.winfo_id and self.units_minutes["text"] >= 1:
-            self.units_minutes["text"] -= 1
+        elif self.navigate_buttons[7].winfo_id == event.widget.winfo_id and self.indicators[4]["text"] >= 1:
+            self.indicators[4]["text"] -= 1
 
 
     def get_tone(self, event = None):
@@ -158,7 +151,7 @@ class Config():
             self.tone = None
 
     def get_time(self):
-        self.time = [str(self.tens_hour["text"]) + str(self.units_hour["text"]), str(self.tens_minutes["text"]) + str(self.units_minutes["text"])]
+        self.time = [str(self.indicators[0]["text"]) + str(self.indicators[1]["text"]), str(self.indicators[3]["text"]) + str(self.indicators[4]["text"])]
         self.time = {"hour": self.time[0], "minute": self.time[1]}
         return self.time
     def get_date(self):
@@ -187,7 +180,7 @@ class Config():
     def add_alarm(self, event):
         date = self.get_date()
         time = self.get_time()
-        
+
         if self.date is None:
             messagebox.showerror(title = "Error!", message = "Please choose a date!")
 

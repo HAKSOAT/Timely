@@ -48,13 +48,15 @@ class AlarmUI():
         self.ringer.call_popup()
         self.alarm_box.show_alarm()
 
+        self.bind_widgets()
 
+        self.button_state = []
+
+    def bind_widgets(self):
         self.buttons[0].bind("<ButtonRelease-1>", self.click_add)
         self.buttons[1].bind("<ButtonRelease-1>", self.click_delete)
         self.buttons[2].bind("<ButtonRelease-1>", self.click_edit)
         self.buttons[3].bind("<ButtonRelease-1>", self.click_clone)
-
-        self.button_state = []
 
     def click_add(self, event):
         add_alarm = tki.Toplevel()
