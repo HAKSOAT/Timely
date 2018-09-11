@@ -53,7 +53,7 @@ class AlarmPopUp():
         self.alarm_box.delete()
         self.get_ringtime()
         self.call_popup()
-        self.alarm_box.show_alarm()
+        self.alarm_box.get_alarm()
         self.pop_up.destroy()
 
     def click_snooze(self):

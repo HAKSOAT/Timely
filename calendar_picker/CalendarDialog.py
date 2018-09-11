@@ -32,6 +32,8 @@ class CalendarFrame(tkinter.LabelFrame):
                 self.date_box["state"] = tkinter.DISABLED
             except AttributeError:
                 self.date_box["state"] = tkinter.DISABLED
+            except tkinter._tkinter.TclError:
+                pass
 
         self.selected_date = tkinter.StringVar()
         if date == None:

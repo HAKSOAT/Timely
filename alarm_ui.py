@@ -46,7 +46,7 @@ class AlarmUI():
         self.ringer = Ringer(self.master, self.storage, self.alarm_box)
         self.ringer.get_ringtime()
         self.ringer.call_popup()
-        self.alarm_box.show_alarm()
+        self.alarm_box.get_alarm()
 
         self.bind_widgets()
 
@@ -84,7 +84,7 @@ class AlarmUI():
             self.alarm_box.delete()
             self.ringer.get_ringtime()
             self.ringer.call_popup()
-            self.alarm_box.show_alarm()
+            self.alarm_box.get_alarm()
         else:
             messagebox.showerror(title = "Error!", message = "Choose an alarm!")
 
@@ -105,7 +105,7 @@ class AlarmUI():
             self.storage.close()
             self.ringer.get_ringtime()
             self.ringer.call_popup()
-            self.alarm_box.show_alarm()
+            self.alarm_box.get_alarm()
 
         else:
             messagebox.showerror(title = "Error!", message = "Choose an alarm!")
@@ -136,7 +136,7 @@ class AlarmUI():
             self.storage.close()
             self.ringer.get_ringtime()
             self.ringer.call_popup()
-            self.alarm_box.show_alarm()
+            self.alarm_box.get_alarm()
 
         elif no_ticked_boxes > 1:
             messagebox.showerror(title = "Error!", message = "Edit one at a time!")

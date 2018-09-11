@@ -1,6 +1,6 @@
 import tkinter as tki
 from alarm_ui import AlarmUI
-import threading
+
 
 window = tki.Tk()
 
