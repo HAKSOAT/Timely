@@ -43,6 +43,11 @@ Or you can simply run the .exe file when available.
 * **Habeeb Kehinde Shopeju** - [HAKSOAT](https://twitter.com/HAKSOAT)
 
 
+## Contributions
+
+Contributions are welcome. Especially if you could help compile into an executable file, as I am having issues doing that.
+
+
 ## Acknowledgments
 
 * [Moshekaplan](https://github.com/moshekaplan/tkinter_components/tree/master/CalendarDialog) - His code was implemented in the date picking section of the application. I appreciate his effort, saved me time.
