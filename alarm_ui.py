@@ -1,12 +1,12 @@
+import os
+import time
 import tkinter as tki
-from tkinter import filedialog, messagebox
+from tkinter import messagebox
 from alarm_config import Config
 from alarm_box import AlarmBox
 from storage import AlarmStorage
 from ringer import Ringer
 from checked_buttons import CheckedButtons
-import os
-import time
 
 
 class AlarmUI():
@@ -23,23 +23,19 @@ class AlarmUI():
             self.storage = AlarmStorage("./")
             self.storage.create()
 
-        self.menu_list = ["Alarm", "Settings"]
-        self.menu = tki.Menu(self.master)
-        self.master.configure(menu = self.menu)
-
-        for each in self.menu_list:
-            self.menu.add_cascade(label = each)
-
-        self.button_images = ["icons/plus-16.gif", "icons/minus-16.gif", "icons/edit-11-16.gif", "icons/copy-16.gif"]
+        self.button_images = ["icons/plus-16.gif", "icons/minus-16.gif",\
+         "icons/edit-11-16.gif", "icons/copy-16.gif"]
         self.button_text = ["Add", "Delete", "Edit", "Clone"]
+        self.button_actions = [self.click_add, self.click_delete, self.click_edit, self.click_clone]
         self.buttons = []
 
-        for image, text in zip(self.button_images, self.button_text):
-            photo = tki.PhotoImage(file = image)
-            button = tki.Button(self.master, text = text, image = photo, compound = "left")
+        for image, text, action in zip(self.button_images, self.button_text, self.button_actions):
+            photo = tki.PhotoImage(file=image)
+            button = tki.Button(self.master, text=text, image=photo,\
+             compound="left", command=action)
             button.image = photo
             column_value = self.button_text.index(text)
-            button.grid(row = 0, column = column_value, sticky = tki.N + tki.E + tki.S + tki.W)
+            button.grid(row=0, column=column_value, sticky=tki.N + tki.E + tki.S + tki.W)
             self.buttons.append(button)
 
         self.alarm_box = AlarmBox(self.master, self.storage)
@@ -48,17 +44,9 @@ class AlarmUI():
         self.ringer.call_popup()
         self.alarm_box.get_alarm()
 
-        self.bind_widgets()
-
         self.button_state = []
 
-    def bind_widgets(self):
-        self.buttons[0].bind("<ButtonRelease-1>", self.click_add)
-        self.buttons[1].bind("<ButtonRelease-1>", self.click_delete)
-        self.buttons[2].bind("<ButtonRelease-1>", self.click_edit)
-        self.buttons[3].bind("<ButtonRelease-1>", self.click_clone)
-
-    def click_add(self, event):
+    def click_add(self):
         add_alarm = tki.Toplevel()
 
         add_alarm.transient(self.master)
@@ -70,7 +58,7 @@ class AlarmUI():
 
         Config(add_alarm, self.storage, self.alarm_box, self.ringer)
 
-    def click_delete(self, event):
+    def click_delete(self):
         label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
         ticked_boxes = [state for label, state in label_state if state == 1]
         no_ticked_boxes = len(ticked_boxes)
@@ -86,9 +74,9 @@ class AlarmUI():
             self.ringer.call_popup()
             self.alarm_box.get_alarm()
         else:
-            messagebox.showerror(title = "Error!", message = "Choose an alarm!")
+            messagebox.showerror(title="Error!", message="Choose an alarm!")
 
-    def click_clone(self, event):
+    def click_clone(self):
         label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
         ticked_boxes = [state for label, state in label_state if state == 1]
         no_ticked_boxes = len(ticked_boxes)
@@ -99,7 +87,8 @@ class AlarmUI():
                     db_result = self.storage.query(label["text"])
                     time_index = time.time()
                     db_result = db_result[0]
-                    self.storage.add(time_index, db_result[1], db_result[2], db_result[3], db_result[4], db_result[5] , db_result[6])
+                    self.storage.add(time_index, db_result[1], db_result[2],\
+                     db_result[3], db_result[4], db_result[5], db_result[6])
                     self.storage.commit()
 
             self.storage.close()
@@ -108,8 +97,8 @@ class AlarmUI():
             self.alarm_box.get_alarm()
 
         else:
-            messagebox.showerror(title = "Error!", message = "Choose an alarm!")
-    def click_edit(self, event):
+            messagebox.showerror(title="Error!", message="Choose an alarm!")
+    def click_edit(self):
         label_state = CheckedButtons(self.alarm_box.checklabel_states).check_label_n_state()
         ticked_boxes = [state for label, state in label_state if state == 1]
         no_ticked_boxes = len(ticked_boxes)
@@ -129,9 +118,9 @@ class AlarmUI():
                     pretime_index = db_result[0][0]
                     pretime = db_result[0][4:6]
                     pretone = db_result[0][6]
-                    predate = "{}/{}/{}".format(db_result[0][1],db_result[0][2],db_result[0][3])
-                    Config(edit_alarm, self.storage, self.alarm_box, self.ringer,
-                            pretime, pretone, predate, pretime_index)
+                    predate = "{}/{}/{}".format(db_result[0][1], db_result[0][2], db_result[0][3])
+                    Config(edit_alarm, self.storage, self.alarm_box, self.ringer,\
+                    pretime, pretone, predate, pretime_index)
 
             self.storage.close()
             self.ringer.get_ringtime()
@@ -139,6 +128,6 @@ class AlarmUI():
             self.alarm_box.get_alarm()
 
         elif no_ticked_boxes > 1:
-            messagebox.showerror(title = "Error!", message = "Edit one at a time!")
+            messagebox.showerror(title="Error!", message="Edit one at a time!")
         else:
-            messagebox.showerror(title = "Error!", message = "Choose an alarm!")
+            messagebox.showerror(title="Error!", message="Choose an alarm!")

@@ -1,3 +1,7 @@
+"""
+    This module is responsible for the configuration of alarms.
+"""
+
 import time as t
 import tkinter as tki
 from tkinter import filedialog
@@ -8,6 +12,9 @@ from calendar_picker.CalendarDialog import CalendarFrame
 
 
 class Config():
+    """
+        This class creates new alarms or edits them
+    """
 
     def __init__(self, master, storage, alarm_box, ringer, pretime=None,\
      pretone=None, predate=None, pretime_index=None):
@@ -88,6 +95,9 @@ class Config():
             self.display_tone_name()
 
     def bind_widgets(self):
+        """
+            This method binds created widgets to user actions.
+        """
         self.navigate_buttons[0].bind("<ButtonRelease-1>", self.increase)
         self.navigate_buttons[2].bind("<ButtonRelease-1>", self.increase)
         self.navigate_buttons[4].bind("<ButtonRelease-1>", self.increase)
@@ -100,6 +110,9 @@ class Config():
 
 
     def increase(self, event):
+        """
+            This method increases the time indicators.
+        """
         if self.navigate_buttons[0].winfo_id == event.widget.winfo_id\
          and self.indicators[0]["text"] <= 1:
             if self.indicators[0]["text"] == 1 and self.indicators[1]["text"] > 3:
@@ -123,6 +136,9 @@ class Config():
             self.indicators[4]["text"] += 1
 
     def decrease(self, event):
+        """
+            This method decreases the time indicators.
+        """
         if self.navigate_buttons[1].winfo_id == event.widget.winfo_id\
          and self.indicators[0]["text"] >= 1:
             self.indicators[0]["text"] -= 1
@@ -141,16 +157,23 @@ class Config():
 
 
     def get_tone(self):
+        """
+            This method lets user pick alarm tone when creating alarms.
+            It also extracts the alarm tone from database while editing alarms.
+        """
         self.display_tone_name()
         try:
-            self.tone = filedialog.askopenfilename(initialdir="/", initialfile="", title="Select tone",\
-            filetypes=(("mp3 files", "*.mp3"),), parent=self.master)
+            self.tone = filedialog.askopenfilename(initialdir="/", initialfile="",\
+             title="Select tone", filetypes=(("mp3 files", "*.mp3"),), parent=self.master)
         except tki._tkinter.TclError:
             pass
         self.display_tone_name()
 
 
     def display_tone_name(self):
+        """
+            This method displays the selected tone in the self.tone_name entry box
+        """
         try:
             self.stripped_tone = self.tone.split("/")[-1]
             self.tone_name["state"] = tki.NORMAL
@@ -160,11 +183,18 @@ class Config():
             self.tone = None
 
     def get_time(self):
+        """
+            This method gets the set time from current states of the time indicators
+        """
         unparsed_time = [str(self.indicators[0]["text"]) + str(self.indicators[1]["text"]),\
          str(self.indicators[3]["text"]) + str(self.indicators[4]["text"])]
         self.time = {"hour": unparsed_time[0], "minute": unparsed_time[1]}
         return self.time
     def get_date(self):
+        """
+            This method lets user pick alarm date when creating alarms.
+            It also extracts the alarm date from database while editing alarms.
+        """
         try:
             self.date = self.calendar_frame.date_box.get().split("/")
             self.date = {"year":self.date[2], "month":self.date[1], "day":self.date[0]}
@@ -173,6 +203,9 @@ class Config():
             self.date = None
 
     def to_db(self):
+        """
+            This method sends the current alarm configurations to the database.
+        """
         if self.time_index is None:
             self.time_index = t.time()
             self.storage.connect()
@@ -188,6 +221,9 @@ class Config():
             self.storage.close()
 
     def add_alarm(self):
+        """
+            This method sets the alarm, and adds alarm widget to the alarm_box
+        """
         date = self.get_date()
         time = self.get_time()
 
@@ -212,6 +248,9 @@ class Config():
                 self.close()
 
     def update_alarm(self):
+        """
+            This method updates the alarm, and updates alarm widget details in the alarm_box
+        """
         self.get_date()
         self.get_time()
         if self.date is None:
@@ -228,4 +267,7 @@ class Config():
             self.close()
 
     def close(self):
+        """
+            This method closes the alarm configuration widget
+        """
         self.master.destroy()
