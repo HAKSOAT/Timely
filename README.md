@@ -26,6 +26,12 @@ python main.py
 
 Or you can simply run the .exe file when available.
 
+### Screenshots
+![Home Interface](https://github.com/HAKSOAT/Timely/blob/master/Screenshots/home.png)
+![Add Alarm](https://github.com/HAKSOAT/Timely/blob/master/Screenshots/add.png)
+![Edit Alarm](https://github.com/HAKSOAT/Timely/blob/master/Screenshots/edit.png)
+![Alarm Rings](https://github.com/HAKSOAT/Timely/blob/master/Screenshots/ring.png)
+
 ## Built With
 
 * [Tkinter](https://wiki.python.org/moin/TkInter) - The GUI library used
