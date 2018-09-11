@@ -26,7 +26,8 @@ class AlarmPopUp():
 
         self.pop_up.minsize(390, 350)
         self.pop_up.maxsize(390, 350)
-
+        edit_alarm.geometry('{}'.format(self.master.winfo_geometry()))
+        
         self.pop_up.title("Arise And Shine!!!")
 
         self.player = ring(tone)

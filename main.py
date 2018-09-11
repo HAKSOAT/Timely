@@ -1,4 +1,6 @@
 import tkinter as tki
+import sys
+import os
 from alarm_ui import AlarmUI
 
 

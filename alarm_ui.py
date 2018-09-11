@@ -51,8 +51,9 @@ class AlarmUI():
 
         add_alarm.transient(self.master)
 
-        add_alarm.minsize(433, 370)
-        add_alarm.maxsize(433, 370)
+        add_alarm.minsize(493, 370)
+        add_alarm.maxsize(493, 370)
+        add_alarm.geometry('{}'.format(self.master.winfo_geometry()))
 
         add_alarm.title("Add Alarm")
 
@@ -109,8 +110,9 @@ class AlarmUI():
                     edit_alarm = tki.Toplevel()
                     edit_alarm.transient(self.master)
 
-                    edit_alarm.minsize(433, 370)
-                    edit_alarm.maxsize(433, 370)
+                    edit_alarm.minsize(493, 370)
+                    edit_alarm.maxsize(493, 370)
+                    edit_alarm.geometry('{}'.format(self.master.winfo_geometry()))
 
                     edit_alarm.title("Edit Alarm")
 
