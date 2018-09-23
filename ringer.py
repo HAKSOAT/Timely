@@ -1,7 +1,7 @@
 import tkinter as tki
-from datetime import datetime as dt
-from popup import AlarmPopUp
 from pygame import mixer
+from popup import AlarmPopUp
+from datetime import datetime as dt
 
 class Ringer():
     def __init__(self, master, storage, alarm_box):
